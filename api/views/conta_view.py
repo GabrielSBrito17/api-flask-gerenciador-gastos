@@ -5,6 +5,7 @@ from ..entidades import conta
 from ..services import conta_service, usuario_service
 from api import api
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from ..decorators import autorizacao_user
 
 class ContaList(Resource):
     @jwt_required()
@@ -31,7 +32,7 @@ class ContaList(Resource):
 
 
 class ContaDetail(Resource):
-    @jwt_required()
+    @autorizacao_user.conta_user
     def get(self, id):
         conta = conta_service.listar_conta_id(id)
         if conta is None:
@@ -39,7 +40,7 @@ class ContaDetail(Resource):
         cs = conta_schema.ContaSchema()
         return make_response(cs.jsonify(conta), 200)
 
-    @jwt_required()
+    @autorizacao_user.conta_user
     def put(self, id):
         conta_bd = conta_service.listar_conta_id(id)
         if conta_bd is None:
@@ -57,7 +58,7 @@ class ContaDetail(Resource):
             result = conta_service.editar_conta(conta_bd, conta_nova)
             return make_response(cs.jsonify(result), 201)
 
-    @jwt_required()
+    @autorizacao_user.conta_user
     def delete(self, id):
         conta = conta_service.listar_conta_id(id)
         if conta is None:
